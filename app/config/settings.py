@@ -43,11 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-
+    'drf_spectacular',
     'core',
     'users',
     'rooms',
     'bookings',
+    'scheduling',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -142,3 +144,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Media Scheduler API',
+    'DESCRIPTION': 'API for managing consultants, rooms, and scheduled sessions.',
+    'VERSION': '1.0.0',
+}
