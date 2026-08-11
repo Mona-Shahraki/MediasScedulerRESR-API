@@ -20,3 +20,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+class ConsultantProfile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='consultant_profile',
+    )
+    preferred_start_time = models.TimeField()
+
+    def __str__(self):
+        return self.user.name

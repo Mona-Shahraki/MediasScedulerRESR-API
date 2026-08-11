@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from django.core.exceptions import ValidationError
+from users.models import User, ConsultantProfile
 
 
 class UserApiTests(APITestCase):
@@ -245,3 +247,56 @@ class UserApiTests(APITestCase):
             'email': user.email,
             'name': user.name,
         })
+
+    def test_user_can_only_have_one_consultant_profile(self):
+        """Test a user can only have one consultant profile."""
+        user = get_user_model().objects.create_user(
+            email='consultant@example.com',
+            password='testpass123',
+            name='Consultant One',
+        )
+
+        ConsultantProfile.objects.create(
+            user=user,
+            preferred_start_time='10:00',
+        )
+
+        with self.assertRaises(Exception):
+            ConsultantProfile.objects.create(
+                user=user,
+                preferred_start_time='11:00',
+            )
+
+    def test_consultant_profile_string_representation(self):
+        """Test the string representation of a consultant profile."""
+        user = get_user_model().objects.create_user(
+            email='consultant@example.com',
+            password='testpass123',
+            name='Consultant One',
+        )
+
+        consultant = ConsultantProfile.objects.create(
+            user=user,
+            preferred_start_time='10:00',
+        )
+
+        self.assertEqual(
+            str(consultant),
+            'Consultant One',
+        )
+
+    def test_preferred_start_time_is_required(self):
+        """Test preferred start time is required."""
+        user = get_user_model().objects.create_user(
+            email='consultant@example.com',
+            password='testpass123',
+            name='Consultant One',
+        )
+
+        consultant = ConsultantProfile(
+            user=user,
+            preferred_start_time=None,
+        )
+
+        with self.assertRaises(ValidationError):
+            consultant.full_clean()

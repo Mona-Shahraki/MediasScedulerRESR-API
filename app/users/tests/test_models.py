@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from users.models import ConsultantProfile
 
 
 class UserModelTests(TestCase):
@@ -91,3 +92,22 @@ class UserModelTests(TestCase):
                 password='testpass123',
                 is_superuser=False,
             )
+
+    def test_create_consultant_profile(self):
+        """Test creating a consultant profile."""
+        user = get_user_model().objects.create_user(
+            email='consultant@example.com',
+            password='testpass123',
+            name='Consultant One',
+        )
+
+        consultant = ConsultantProfile.objects.create(
+            user=user,
+            preferred_start_time='10:00',
+        )
+
+        self.assertEqual(consultant.user, user)
+        self.assertEqual(
+            consultant.preferred_start_time,
+            '10:00',
+        )
